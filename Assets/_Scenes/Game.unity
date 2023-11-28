@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028305, g: 0.22571313, b: 0.3069213, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -228,6 +228,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   jumpForce: 5
   swipeThreshold: 50
+  sideMoveSpeed: 2
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -653,8 +654,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24b9221ca715c49f7b4356287005391f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackSegmentPrefab: {fileID: 4406504925836188357, guid: 4e07819b4609444d28af1ef13597bd99,
-    type: 3}
+  trackSegmentPrefab:
+  - {fileID: 1807189554597698469, guid: e5a1eb864f4e6fe4898169ebf4a1e44c, type: 3}
+  - {fileID: 1807189554597698469, guid: b74b58d90aff74b4f8880cffa58128f2, type: 3}
   initialSegments: 5
   segmentLength: 10
   trackHolder: {fileID: 1675858364}

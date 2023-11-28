@@ -138,5 +138,10 @@ public class PlayerController : MonoBehaviour
         {
             canJump = true;
         }
+
+        if (collision.gameObject.GetComponent<StaticObstacle>()) 
+        {
+            Destroy(gameObject);
+        }
     }
 }
