@@ -112,8 +112,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 197317b4fc7a5fa4ebdef22f15472839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackObstacle: {fileID: 983029556716795353, guid: e581220cdc59ecb43a2048b6e9783ade,
-    type: 3}
 --- !u!1001 &2605480980817375956
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -149,7 +147,7 @@ PrefabInstance:
     - target: {fileID: 1389555475068512575, guid: b633da5e671ac9146bb4f883f9e22c0b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 1389555475068512575, guid: b633da5e671ac9146bb4f883f9e22c0b,
         type: 3}
@@ -224,7 +222,7 @@ PrefabInstance:
     - target: {fileID: 4418139174346125017, guid: 4e2d1c4d929197d4285fb253550e3518,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4418139174346125017, guid: 4e2d1c4d929197d4285fb253550e3518,
         type: 3}
