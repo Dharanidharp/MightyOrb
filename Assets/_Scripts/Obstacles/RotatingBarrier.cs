@@ -5,10 +5,15 @@ public class RotatingBarrier : Obstacle
 {
     [SerializeField] private Vector3 rotationSpeed = new Vector3(0, 100, 0); // Example default value
 
+    private void Start()
+    {
+        StartCoroutine(Rotate());
+    }
+
     // Start rotating once spawned
     public override void ActivateObstacle()
     {
-        StartCoroutine(Rotate());
+        
     }
 
     IEnumerator Rotate()

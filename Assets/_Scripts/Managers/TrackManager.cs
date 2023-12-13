@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TrackManager : MonoBehaviour
@@ -29,6 +30,10 @@ public class TrackManager : MonoBehaviour
 
     private void Update()
     {
+        if (playerTransform == null) 
+        {
+            return;
+        }
         // Check if the back end of the first track segment has passed the player.
         if (trackSegments.Peek().transform.position.z + segmentLength < playerTransform.position.z - segmentLength)
         {
@@ -60,6 +65,11 @@ public class TrackManager : MonoBehaviour
 
         // Update the end position of the last segment in the track for the next segment
         lastSegmentEndPosition = newSegment.transform.position + new Vector3(0, 0, segmentLength);
+
+        for (int i = 0; i < newSegment.transform.childCount; i++)
+        {
+            newSegment.transform.GetChild(i).gameObject.SetActive(true);
+        }
     }
 
     /// <summary>
@@ -68,6 +78,12 @@ public class TrackManager : MonoBehaviour
     private void RecycleTrackSegment()
     {
         GameObject oldSegment = trackSegments.Dequeue();
+        
+        for (int i = 0; i < oldSegment.transform.childCount; i++)
+        {
+            oldSegment.transform.GetChild(i).gameObject.SetActive(true);
+        }
+
         oldSegment.transform.position = lastSegmentEndPosition;
         trackSegments.Enqueue(oldSegment);
 

@@ -22,6 +22,10 @@ public class PlayerController : MonoBehaviour
     [Header("Keyboard Settings")]
     [SerializeField] private float sideMoveSpeed = 2f; // Speed for left and right movement
 
+    [SerializeField] private GameManager gameManager;
+
+    public int Coins { get; set; }
+
     // State
     private bool canJump = true;
     private Vector2 touchStart;
@@ -31,6 +35,11 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         forwardSpeed = startSpeed; // initialize with start speed
+    }
+
+    private void Start()
+    {
+        Coins = 0;
     }
 
     private void Update()
@@ -134,14 +143,24 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.GetComponent<Track>())
         {
             canJump = true;
         }
 
-        if (collision.gameObject.GetComponent<StaticObstacle>()) 
+        if (collision.gameObject.GetComponent<StaticObstacle>() || collision.gameObject.GetComponent<RotatingBarrier>()) 
         {
             Destroy(gameObject);
+            gameManager.SetGameOverActive();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.activeInHierarchy && other.gameObject.GetComponent<CollectibleRotator>())
+        {
+            Coins += 1;
+            other.gameObject.SetActive(false);
         }
     }
 }
