@@ -7,7 +7,7 @@ public class TrackManager : MonoBehaviour
     [Header("Track Settings")]
     [SerializeField] private GameObject[] trackSegmentPrefab; // The prefab of the track segment
     [SerializeField] private int initialSegments = 5;      // Number of track segments spawned at the start
-    [SerializeField] private float segmentLength = 10f;    // Length of each track segment
+    [SerializeField] private float segmentLength = 20f;    // Length of each track segment
     [SerializeField] private GameObject trackHolder; // Environment
 
     [Header("Player Settings")]
@@ -50,6 +50,7 @@ public class TrackManager : MonoBehaviour
     private void SpawnTrackSegment()
     {
         GameObject newSegment;
+
         if (trackSegments.Count < initialSegments)
         {
             newSegment = Instantiate(trackSegmentPrefab[Random.Range(0, trackSegmentPrefab.Length)], lastSegmentEndPosition, Quaternion.identity, trackHolder.transform);

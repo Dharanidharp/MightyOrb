@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -16,8 +17,16 @@ public class PlayerController : MonoBehaviour
     private bool isJumping = false;
     private float jumpTime = 0f;
 
+    // Tap for jump
+    private float lastTapTime = 0f;
+    private int tapCount = 0;
+    private float doubleTapTime = 0.2f; // Time window for double tap (in seconds)
+
+
     [Header("Swipe Settings")]
-    [SerializeField] private float swipeThreshold = 50f;
+    [SerializeField] private float horizontalSwipeThreshold = 5f;
+    private float verticalSwipeThreshold = 3f;
+    private bool isSwiping = false;
 
     [Header("Keyboard Settings")]
     [SerializeField] private float sideMoveSpeed = 2f; // Speed for left and right movement
@@ -44,10 +53,15 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        HandleMovement();
         HandleJump();
         HandleSwipe();
         HandleKeyboardInput();
+        HandleFallOffTrack();
+    }
+
+    private void FixedUpdate()
+    {
+        HandleMovement();
     }
 
     private void HandleMovement()
@@ -77,9 +91,18 @@ public class PlayerController : MonoBehaviour
                 jumpTime = 0f;
             }
         }
-        else if (Input.GetButtonDown("Jump") && canJump)
+        else if ((Input.GetButtonDown("Jump") /*|| Input.GetButtonDown("Fire1")*/) && canJump)
         {
             Jump();
+        }
+    }
+
+    private void HandleFallOffTrack() 
+    {
+        if (gameObject.transform.position.y < -1.0) 
+        {
+            Destroy(gameObject);
+            gameManager.SetGameOverActive();
         }
     }
 
@@ -100,50 +123,110 @@ public class PlayerController : MonoBehaviour
         transform.position += sideMovement * Time.deltaTime;
     }
 
+    private float lateralMovementSpeed = 5.0f; // Adjust this value as needed for your game
+
+    private void MoveLeft()
+    {
+        // Calculate the amount to move
+        float moveAmount = lateralMovementSpeed * Time.deltaTime;
+
+        // Move the object to the left
+        Vector3 newPosition = rb.position - new Vector3(moveAmount, 0, 0);
+
+        // Apply the new position
+        rb.MovePosition(newPosition);
+    }
+
+    private void MoveRight()
+    {
+        // Calculate the amount to move
+        float moveAmount = lateralMovementSpeed * Time.deltaTime;
+
+        // Move the object to the right
+        Vector3 newPosition = rb.position + new Vector3(moveAmount, 0, 0);
+
+        // Apply the new position
+        rb.MovePosition(newPosition);
+    }
+
     private void HandleSwipe()
     {
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
-
+            Vector2 swipeDelta;
             switch (touch.phase)
             {
                 case TouchPhase.Began:
+                    // double tap
+                    if ((Time.time - lastTapTime) < doubleTapTime)
+                    {
+                        tapCount++;
+                    }
+                    else
+                    {
+                        tapCount = 1;
+                    }
+                    lastTapTime = Time.time;
+
+                    //if (tapCount == 2 && canJump)
+                    //{
+                    //    Jump();
+                    //    tapCount = 0; // Reset tap count after a double tap
+                    //}
+
                     touchStart = touch.position;
+                    isSwiping = true;
+                    break;
+
+                case TouchPhase.Moved:
+                    if (isSwiping)
+                    {
+                        swipeDelta = touch.position - touchStart;
+
+                        // Check if the swipe is vertical
+                        if (Mathf.Abs(swipeDelta.x) > horizontalSwipeThreshold && Mathf.Abs(swipeDelta.x) > Mathf.Abs(swipeDelta.y))
+                        {
+                            // Update position based on swipeDelta
+                            if (swipeDelta.x < 0)
+                            {
+                                MoveLeft();
+                            }
+                            else if (swipeDelta.x > 0)
+                            {
+                                MoveRight();
+                            }
+                        }
+                    }
                     break;
 
                 case TouchPhase.Ended:
-                    Vector2 swipeDelta = touch.position - touchStart;
-
-                    if (Mathf.Abs(swipeDelta.x) > swipeThreshold)
+                    swipeDelta = touch.position - touchStart;
+                    
+                    // Check if the swipe is vertical
+                    if (Mathf.Abs(swipeDelta.y) > verticalSwipeThreshold && Mathf.Abs(swipeDelta.y) > Mathf.Abs(swipeDelta.x))
                     {
-                        if (swipeDelta.x < 0)
+                        // Check if the swipe is upwards
+                        if (swipeDelta.y > 0 && canJump)
                         {
-                            MoveLeft();
-                        }
-                        else
-                        {
-                            MoveRight();
+                            Jump();
                         }
                     }
+
+                    // Update the start position for the next frame
+                    touchStart = touch.position;
+                    break;
+
+                case TouchPhase.Canceled:
+                    isSwiping = false;
                     break;
             }
         }
     }
 
-    private void MoveLeft()
-    {
-        // Implement lane switching to the left
-    }
-
-    private void MoveRight()
-    {
-        // Implement lane switching to the right
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.GetComponent<Track>())
+        if (collision.gameObject.GetComponentInParent<Track>())
         {
             canJump = true;
         }
