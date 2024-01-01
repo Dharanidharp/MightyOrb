@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private int playerScore = 0;
+    [SerializeField] public int PlayerScore { get; set; }
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject gameOver;
@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
     {
         if (player != null && player.gameObject.activeSelf) 
         {
-            playerScore += 1;
-            scoreText.text = "Score : " + playerScore.ToString();
+            PlayerScore += 1;
+            scoreText.text = "Score : " + PlayerScore.ToString();
             coinsCollected.text = "Coins : " + player.GetComponent<PlayerController>().Coins.ToString();
         }
     }

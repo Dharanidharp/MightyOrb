@@ -14,8 +14,8 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 0
-  m_FogColor: {r: 0.9960785, g: 0.6784314, b: 0.9803922, a: 1}
+  m_Fog: 1
+  m_FogColor: {r: 1, g: 0.37647063, b: 0, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.03
   m_LinearFogStart: 0
@@ -676,7 +676,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   jumpForce: 5
-  swipeThreshold: 50
+  horizontalSwipeThreshold: 5
   sideMoveSpeed: 2
   gameManager: {fileID: 1995488808}
 --- !u!1 &326169843
@@ -2055,17 +2055,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackSegmentPrefab:
   - {fileID: 2460047000800877675, guid: 2872b21813cff1f4eae5402e52031f81, type: 3}
-  - {fileID: 1807189554597698469, guid: b74b58d90aff74b4f8880cffa58128f2, type: 3}
-  - {fileID: 1807189554597698469, guid: 0ba25083e68a5c743819b19247466181, type: 3}
   - {fileID: 2460047000800877675, guid: d147c8099b70432498843a0ba537496c, type: 3}
   - {fileID: 1807189554597698469, guid: 6c2456fec17f2974a87672ec05928c31, type: 3}
+  - {fileID: 1807189554597698469, guid: b74b58d90aff74b4f8880cffa58128f2, type: 3}
   - {fileID: 2460047000800877675, guid: 10b47471e9ab5a446bf56c129e45504a, type: 3}
   - {fileID: 2460047000800877675, guid: 53558c99b27baa94fad45627e2e372a0, type: 3}
+  - {fileID: 1807189554597698469, guid: 0ba25083e68a5c743819b19247466181, type: 3}
   - {fileID: 2460047000800877675, guid: 173ce5e5097d00047b2e25a7bca9d887, type: 3}
   initialSegments: 10
-  segmentLength: 20
+  segmentLength: 25
   trackHolder: {fileID: 1675858364}
   playerTransform: {fileID: 268797201}
+  gameManager: {fileID: 1995488808}
 --- !u!1 &1562870666
 GameObject:
   m_ObjectHideFlags: 0
@@ -2488,7 +2489,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9f65d554f6990941a5a4f6a57b0e60b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerScore: 0
   scoreText: {fileID: 1562870668}
   player: {fileID: 268797200}
   gameOver: {fileID: 990203127}
