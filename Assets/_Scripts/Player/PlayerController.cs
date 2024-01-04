@@ -25,11 +25,12 @@ public class PlayerController : MonoBehaviour
 
     [Header("Swipe Settings")]
     [SerializeField] private float horizontalSwipeThreshold = 5f;
-    private float verticalSwipeThreshold = 3f;
+    [SerializeField] private float verticalSwipeThreshold = 3f;
     private bool isSwiping = false;
+    [SerializeField] private float lateralMovementSpeed = 2.0f; // Adjust this value as needed for your game
 
     [Header("Keyboard Settings")]
-    [SerializeField] private float sideMoveSpeed = 2f; // Speed for left and right movement
+    [SerializeField] private float sideMoveSpeed = 5f; // Speed for left and right movement
 
     [SerializeField] private GameManager gameManager;
 
@@ -123,8 +124,6 @@ public class PlayerController : MonoBehaviour
         transform.position += sideMovement * Time.deltaTime;
     }
 
-    private float lateralMovementSpeed = 5.0f; // Adjust this value as needed for your game
-
     private void MoveLeft()
     {
         // Calculate the amount to move
@@ -155,6 +154,7 @@ public class PlayerController : MonoBehaviour
         {
             Touch touch = Input.GetTouch(0);
             Vector2 swipeDelta;
+
             switch (touch.phase)
             {
                 case TouchPhase.Began:
@@ -184,18 +184,18 @@ public class PlayerController : MonoBehaviour
                     {
                         swipeDelta = touch.position - touchStart;
 
-                        // Check if the swipe is vertical
-                        if (Mathf.Abs(swipeDelta.x) > horizontalSwipeThreshold && Mathf.Abs(swipeDelta.x) > Mathf.Abs(swipeDelta.y))
+                        // Horizontal Swipe for Left and Right Movement
+                        if (Mathf.Abs(swipeDelta.x) > horizontalSwipeThreshold)
                         {
-                            // Update position based on swipeDelta
-                            if (swipeDelta.x < 0)
-                            {
-                                MoveLeft();
-                            }
-                            else if (swipeDelta.x > 0)
-                            {
-                                MoveRight();
-                            }
+                            // Calculate movement amount based on the swipe delta
+                            //float moveAmount = swipeDelta.x * lateralMovementSpeed * Time.deltaTime;
+                            Vector3 sideMovement = new Vector3(swipeDelta.x * lateralMovementSpeed, 0, 0);
+                            Debug.Log(swipeDelta.x);
+                            //transform.Translate(moveAmount, 0, 0);
+                            transform.position += sideMovement * Time.deltaTime;
+
+                            // Update the start position for the next frame
+                            touchStart = touch.position;
                         }
                     }
                     break;
@@ -215,6 +215,8 @@ public class PlayerController : MonoBehaviour
 
                     // Update the start position for the next frame
                     touchStart = touch.position;
+
+                    isSwiping = false;
                     break;
 
                 case TouchPhase.Canceled:

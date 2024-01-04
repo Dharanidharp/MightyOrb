@@ -648,9 +648,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9549bd2d8fbf409c83020301dfee5f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startSpeed: 5
-  acceleration: 0.05
-  maxSpeed: 50
+  startSpeed: 4
+  acceleration: 0.1
+  maxSpeed: 1000
   jumpCurve:
     serializedVersion: 2
     m_Curve:
@@ -677,7 +677,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   jumpForce: 5
   horizontalSwipeThreshold: 5
-  sideMoveSpeed: 2
+  verticalSwipeThreshold: 8
+  lateralMovementSpeed: 0.35
+  sideMoveSpeed: 5
   gameManager: {fileID: 1995488808}
 --- !u!1 &326169843
 GameObject:

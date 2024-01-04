@@ -94,7 +94,7 @@ public class TrackManager : MonoBehaviour
     {
         // Implement your difficulty scaling logic here.
         // For example, increase difficulty for every 1000 points.
-        int index = score / 1000;
+        int index = score / 800;
         // Ensure the index does not exceed the array bounds.
         return Mathf.Clamp(index, 0, trackSegmentPrefab.Length - 1);
     }
