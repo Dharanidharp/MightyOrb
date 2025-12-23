@@ -4,33 +4,32 @@ using UnityEngine;
 public class TrackManager : MonoBehaviour
 {
     [Header("Track Settings")]
-    [SerializeField] private GameObject[] trackSegmentPrefab; // The prefab of the track segment
-    [SerializeField] private int initialSegments = 5;      // Number of track segments spawned at the start
-    [SerializeField] private float segmentLength = 20f;    // Length of each track segment
-    [SerializeField] private GameObject trackHolder;       // Environment
+    [SerializeField] private GameObject[] trackSegmentPrefab; // Ensure this is sorted: easiest (index 0) to hardest
+    [SerializeField] private int initialSegments = 5;
+    [SerializeField] private float segmentLength = 20f;
+    [SerializeField] private GameObject trackHolder;
 
     [Header("Player Settings")]
-    [SerializeField] private Transform playerTransform;    // Reference to the player's transform
-    [SerializeField] private GameManager gameManager;      // Reference to the player's score component
+    [SerializeField] private Transform playerTransform;
+    [SerializeField] private GameManager gameManager;
 
-    private Queue<GameObject> trackSegments = new Queue<GameObject>(); // Queue holding the active track segments
-    private Vector3 lastSegmentEndPosition;                            // End position of the last segment in the track
+    private Queue<GameObject> trackSegments = new Queue<GameObject>();
+    private Vector3 lastSegmentEndPosition;
 
     private void Start()
     {
-        // Initialize the end position of the last segment to the starting position (origin)
         lastSegmentEndPosition = Vector3.zero;
 
         // Spawn initial segments
         for (int i = 0; i < initialSegments; i++)
         {
-            SpawnTrackSegment();
+            SpawnTrackSegment(true); // Pass 'true' for initial spawn
         }
     }
 
     private void Update()
     {
-        if (playerTransform == null)
+        if (playerTransform == null || gameManager.IsGameOver)
         {
             return;
         }
@@ -40,46 +39,41 @@ public class TrackManager : MonoBehaviour
 
     private void ManageTrackSegments()
     {
-        // Check if the back end of the first track segment has passed the player.
-        if (trackSegments.Peek().transform.position.z + segmentLength < playerTransform.position.z - segmentLength)
+        // This check is correct: destroys a segment when the player is one full segment past its start
+        if (playerTransform.position.z - segmentLength > trackSegments.Peek().transform.position.z)
         {
-            RecycleTrackSegment();
-            SpawnTrackSegment();
+            // 1. Destroy the oldest segment
+            Destroy(trackSegments.Dequeue());
+
+            // 2. Spawn a new one at the end
+            SpawnTrackSegment(false);
         }
     }
 
-    private void SpawnTrackSegment()
+    private void SpawnTrackSegment(bool isInitialSpawn = false)
     {
-        GameObject newSegment;
+        int prefabIndex;
 
-        int prefabIndex = GetPrefabIndexBasedOnScore(gameManager.PlayerScore); // Continually updated based on score
-        if (trackSegments.Count < initialSegments)
+        if (isInitialSpawn)
         {
-            newSegment = Instantiate(trackSegmentPrefab[prefabIndex], lastSegmentEndPosition, Quaternion.identity, trackHolder.transform);
+            prefabIndex = 0; // Always use the easiest prefab (index 0) for the start
         }
         else
         {
-            Destroy(trackSegments.Dequeue());
-            newSegment = Instantiate(trackSegmentPrefab[prefabIndex], lastSegmentEndPosition, Quaternion.identity, trackHolder.transform);
-            newSegment.transform.position = lastSegmentEndPosition;
-            // Optionally reset the prefab here if you want to change the segment type
-            // This could involve replacing the existing segment with a new prefab
-            newSegment = Instantiate(trackSegmentPrefab[prefabIndex], lastSegmentEndPosition, Quaternion.identity, trackHolder.transform);
-
+            // CHANGED: Now calls the new random function
+            prefabIndex = GetRandomPrefabIndexByScore(gameManager.PlayerScore);
         }
+
+        GameObject newSegment = Instantiate(
+            trackSegmentPrefab[prefabIndex],
+            lastSegmentEndPosition,
+            Quaternion.identity,
+            trackHolder.transform
+        );
 
         trackSegments.Enqueue(newSegment);
         lastSegmentEndPosition = newSegment.transform.position + new Vector3(0, 0, segmentLength);
         ActivateSegmentChildren(newSegment);
-    }
-
-    private void RecycleTrackSegment()
-    {
-        GameObject oldSegment = trackSegments.Dequeue();
-        ActivateSegmentChildren(oldSegment);
-        oldSegment.transform.position = lastSegmentEndPosition;
-        trackSegments.Enqueue(oldSegment);
-        lastSegmentEndPosition = oldSegment.transform.position + new Vector3(0, 0, segmentLength);
     }
 
     private void ActivateSegmentChildren(GameObject segment)
@@ -90,12 +84,21 @@ public class TrackManager : MonoBehaviour
         }
     }
 
-    private int GetPrefabIndexBasedOnScore(int score)
+    // --- THIS IS THE FIXED FUNCTION ---
+    // CHANGED: Renamed and logic updated for randomness
+    private int GetRandomPrefabIndexByScore(int score)
     {
-        // Implement your difficulty scaling logic here.
-        // For example, increase difficulty for every 1000 points.
-        int index = score / 800;
-        // Ensure the index does not exceed the array bounds.
-        return Mathf.Clamp(index, 0, trackSegmentPrefab.Length - 1);
+        // 1. Determine the *maximum* difficulty index allowed based on score
+        // (e.g., 0-799 score = max index 0, 800-1599 = max index 1)
+        int maxAllowedIndex = score / 800;
+
+        // 2. Clamp that index so it doesn't go higher than our available prefabs
+        maxAllowedIndex = Mathf.Clamp(maxAllowedIndex, 0, trackSegmentPrefab.Length - 1);
+
+        // 3. Pick a *random* index between 0 (easiest) and the max allowed index (inclusive)
+        // Random.Range(min, max) for integers is *exclusive* of the max, so we add 1
+        int randomIndex = Random.Range(0, maxAllowedIndex + 1);
+
+        return randomIndex;
     }
 }

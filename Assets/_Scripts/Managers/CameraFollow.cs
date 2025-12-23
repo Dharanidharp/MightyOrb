@@ -3,11 +3,17 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     [Header("Follow Settings")]
-    [SerializeField] private Transform target; // The player (or orb) to follow
-    [SerializeField] private Vector3 offset; // Offset distance from the player
-    [SerializeField] private float smoothSpeed = 0.125f; // How smoothly the camera will follow the player
+    [SerializeField] private Transform target;
+    [SerializeField] private Vector3 offset;
+    [SerializeField] private float smoothSpeed = 0.125f;
 
-    private void FixedUpdate()
+    // ADDED: Required for Vector3.SmoothDamp
+    private Vector3 velocity = Vector3.zero;
+
+    // CHANGED: Switched to LateUpdate for camera movement.
+    // This runs *after* all physics (FixedUpdate) and logic (Update)
+    // for the frame, ensuring the camera follows the player's final position.
+    private void LateUpdate()
     {
         FollowTarget();
     }
@@ -17,7 +23,17 @@ public class CameraFollow : MonoBehaviour
         if (target == null) return;
 
         Vector3 desiredPosition = target.position + offset;
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+
+        // CHANGED: Using SmoothDamp instead of Lerp.
+        // SmoothDamp is generally better for cameras as it's not
+        // frame-rate dependent and provides a critically-damped spring effect.
+        Vector3 smoothedPosition = Vector3.SmoothDamp(
+            transform.position,
+            desiredPosition,
+            ref velocity,
+            smoothSpeed
+        );
+
         transform.position = smoothedPosition;
     }
 }
