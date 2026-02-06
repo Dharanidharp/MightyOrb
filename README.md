@@ -1,3 +1,5 @@
 # MightyOrb - Gameplay link - https://youtube.com/shorts/u-RPmFF4v24?si=Plo2MKPulyEIaT9f
-### An endless runner game where the player controls an orb and must traverse different tracks throught different environments
+### An endless runner game where the player controls an orb and must traverse different tracks throught different environments.
+### Contains power ups, Ads for endless playthrough
 ### Built for mobiles.
+
